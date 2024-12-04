@@ -12,7 +12,7 @@ INCLUDE ZPROJECT13_BP_PB0 .
 INCLUDE ZPROJECT13_BP_PAI .
 
 " @TODO
-" 지급조건 잘리는문제
+" 조회실행 후 사업자번호 변경 후 변경데이터 저장 되게
 " 저장후 인터널테이블 전부 삭제하기 (생성용 인터널 테이블)
 " SEARCH HELP랑 POSSIBLE ENTRY 만들기
 " 조회부분 진행하기
@@ -45,4 +45,7 @@ AT SELECTION-SCREEN OUTPUT.
 START-OF-SELECTION .
   IF P_CREATE = 'X' .
     CALL SCREEN 100 .
+  ELSEIF P_LOOKUP = 'X' .
+    PERFORM GET_DATA .
+    CALL SCREEN 200 .
   ENDIF .

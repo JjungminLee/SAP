@@ -154,6 +154,27 @@ ENDMODULE.
 *----------------------------------------------------------------------*
 MODULE USER_COMMAND_0200 INPUT.
 
+  CASE OK_CODE .
+    WHEN 'SAVE' .
+
+     CALL METHOD gc_grid->CHECK_CHANGED_DATA.
+        IF sy-subrc <> 0.
+          MESSAGE '변경된 데이터를 확인할 수 없습니다.' TYPE 'E'.
+          RETURN.
+        ENDIF.
+      LOOP AT GT_SUPPLIER INTO GS_SUPPLIER .
+
+          MOVE-CORRESPONDING GS_SUPPLIER  TO GS_SUPPLIER_SAVE .
+          APPEND GS_SUPPLIER_SAVE TO GT_SUPPLIER_SAVE .
+      ENDLOOP .
+      MODIFY ZEDT13_201 FROM TABLE GT_SUPPLIER_SAVE .
+      IF SY-SUBRC = 0 .
+          MESSAGE '저장성공' TYPE 'I' .
+      ELSE .
+          MESSAGE '저장실패' TYPE 'I' .
+      ENDIF .
+  ENDCASE .
+
 ENDMODULE.
 
 MODULE EXIT_COMMAND INPUT.

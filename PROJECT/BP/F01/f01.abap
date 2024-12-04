@@ -128,67 +128,151 @@ ENDFORM.
 FORM CALL_ALV .
 
 
-IF P_KTOKK = '3000' .
-  CALL METHOD GC_GRID->SET_TABLE_FOR_FIRST_DISPLAY
-  EXPORTING
-*    I_BUFFER_ACTIVE               =
-*    I_BYPASSING_BUFFER            =
-*    I_CONSISTENCY_CHECK           =
-*    I_STRUCTURE_NAME              =
-*    IS_VARIANT                    =
-*    I_SAVE                        =
-*    I_DEFAULT                     = 'X'
-    IS_LAYOUT                     = GS_LAYOUT
-*    IS_PRINT                      =
-*    IT_SPECIAL_GROUPS             =
-*    IT_TOOLBAR_EXCLUDING          =
-*    IT_HYPERLINK                  =
-*    IT_ALV_GRAPHICS               =
-*    IT_EXCEPT_QINFO               =
-*    IR_SALV_ADAPTER               =
-  CHANGING
-    IT_OUTTAB                     = GT_SUPPLIER
-    IT_FIELDCATALOG               = GT_FIELDCAT_PERSON
-*    IT_SORT                       =
-*    IT_FILTER                     =
-*  EXCEPTIONS
-*    INVALID_PARAMETER_COMBINATION = 1
-*    PROGRAM_ERROR                 = 2
-*    TOO_MANY_LINES                = 3
-*    others                        = 4
-.
+IF P_CREATE = 'X' .
+  "생성시
 
-ELSE .
+  IF P_KTOKK = '3000' .
+    CALL METHOD GC_GRID->SET_TABLE_FOR_FIRST_DISPLAY
+    EXPORTING
+*      I_BUFFER_ACTIVE               =
+*      I_BYPASSING_BUFFER            =
+*      I_CONSISTENCY_CHECK           =
+*      I_STRUCTURE_NAME              =
+*      IS_VARIANT                    =
+*      I_SAVE                        =
+*      I_DEFAULT                     = 'X'
+      IS_LAYOUT                     = GS_LAYOUT
+*      IS_PRINT                      =
+*      IT_SPECIAL_GROUPS             =
+*      IT_TOOLBAR_EXCLUDING          =
+*      IT_HYPERLINK                  =
+*      IT_ALV_GRAPHICS               =
+*      IT_EXCEPT_QINFO               =
+*      IR_SALV_ADAPTER               =
+    CHANGING
+      IT_OUTTAB                     = GT_SUPPLIER
+      IT_FIELDCATALOG               = GT_FIELDCAT_PERSON
+*      IT_SORT                       =
+*      IT_FILTER                     =
+*    EXCEPTIONS
+*      INVALID_PARAMETER_COMBINATION = 1
+*      PROGRAM_ERROR                 = 2
+*      TOO_MANY_LINES                = 3
+*      others                        = 4
+  .
 
-   CALL METHOD GC_GRID->SET_TABLE_FOR_FIRST_DISPLAY
-  EXPORTING
-*    I_BUFFER_ACTIVE               =
-*    I_BYPASSING_BUFFER            =
-*    I_CONSISTENCY_CHECK           =
-*    I_STRUCTURE_NAME              =
-*    IS_VARIANT                    =
-*    I_SAVE                        =
-*    I_DEFAULT                     = 'X'
-    IS_LAYOUT                     = GS_LAYOUT
-*    IS_PRINT                      =
-*    IT_SPECIAL_GROUPS             =
-*    IT_TOOLBAR_EXCLUDING          =
-*    IT_HYPERLINK                  =
-*    IT_ALV_GRAPHICS               =
-*    IT_EXCEPT_QINFO               =
-*    IR_SALV_ADAPTER               =
-  CHANGING
-    IT_OUTTAB                     = GT_SUPPLIER
-    IT_FIELDCATALOG               = GT_FIELDCAT_COMPANY
-*    IT_SORT                       =
-*    IT_FILTER                     =
-*  EXCEPTIONS
-*    INVALID_PARAMETER_COMBINATION = 1
-*    PROGRAM_ERROR                 = 2
-*    TOO_MANY_LINES                = 3
-*    others                        = 4
-.
+  ELSE .
 
+     CALL METHOD GC_GRID->SET_TABLE_FOR_FIRST_DISPLAY
+    EXPORTING
+*      I_BUFFER_ACTIVE               =
+*      I_BYPASSING_BUFFER            =
+*      I_CONSISTENCY_CHECK           =
+*      I_STRUCTURE_NAME              =
+*      IS_VARIANT                    =
+*      I_SAVE                        =
+*      I_DEFAULT                     = 'X'
+      IS_LAYOUT                     = GS_LAYOUT
+*      IS_PRINT                      =
+*      IT_SPECIAL_GROUPS             =
+*      IT_TOOLBAR_EXCLUDING          =
+*      IT_HYPERLINK                  =
+*      IT_ALV_GRAPHICS               =
+*      IT_EXCEPT_QINFO               =
+*      IR_SALV_ADAPTER               =
+    CHANGING
+      IT_OUTTAB                     = GT_SUPPLIER
+      IT_FIELDCATALOG               = GT_FIELDCAT_COMPANY
+*      IT_SORT                       =
+*      IT_FILTER                     =
+*    EXCEPTIONS
+*      INVALID_PARAMETER_COMBINATION = 1
+*      PROGRAM_ERROR                 = 2
+*      TOO_MANY_LINES                = 3
+*      others                        = 4
+  .
+
+
+  ENDIF .
+
+ELSEIF P_LOOKUP = 'X' .
+
+  "조회시
+
+  DATA: LV_KTOKK2 TYPE ZEDT13_201-ZLFA1_STCD1 .
+  LV_KTOKK2 =  P_KTOKK2 .
+
+  CALL FUNCTION 'CONVERSION_EXIT_ALPHA_OUTPUT'
+    EXPORTING
+      INPUT  = LV_KTOKK2
+    IMPORTING
+      OUTPUT = LV_KTOKK2.
+
+
+
+    IF LV_KTOKK2 = '3000' .
+      CALL METHOD GC_GRID->SET_TABLE_FOR_FIRST_DISPLAY
+*      EXPORTING
+*        I_BUFFER_ACTIVE               =
+*        I_BYPASSING_BUFFER            =
+*        I_CONSISTENCY_CHECK           =
+*        I_STRUCTURE_NAME              =
+*        IS_VARIANT                    =
+*        I_SAVE                        =
+*        I_DEFAULT                     = 'X'
+*        IS_LAYOUT                     = GS_LAYOUT
+*        IS_PRINT                      =
+*        IT_SPECIAL_GROUPS             =
+*        IT_TOOLBAR_EXCLUDING          =
+*        IT_HYPERLINK                  =
+*        IT_ALV_GRAPHICS               =
+*        IT_EXCEPT_QINFO               =
+*        IR_SALV_ADAPTER               =
+      CHANGING
+        IT_OUTTAB                     = GT_SUPPLIER
+        IT_FIELDCATALOG               = GT_FIELDCAT_PERSON
+*        IT_SORT                       =
+*        IT_FILTER                     =
+*      EXCEPTIONS
+*        INVALID_PARAMETER_COMBINATION = 1
+*        PROGRAM_ERROR                 = 2
+*        TOO_MANY_LINES                = 3
+*        others                        = 4
+    .
+
+    ELSE .
+
+      CALL METHOD GC_GRID->SET_TABLE_FOR_FIRST_DISPLAY
+*      EXPORTING
+*        I_BUFFER_ACTIVE               =
+*        I_BYPASSING_BUFFER            =
+*        I_CONSISTENCY_CHECK           =
+*        I_STRUCTURE_NAME              =
+*        IS_VARIANT                    =
+*        I_SAVE                        =
+*        I_DEFAULT                     = 'X'
+*        IS_LAYOUT                     = GS_LAYOUT
+*        IS_PRINT                      =
+*        IT_SPECIAL_GROUPS             =
+*        IT_TOOLBAR_EXCLUDING          =
+*        IT_HYPERLINK                  =
+*        IT_ALV_GRAPHICS               =
+*        IT_EXCEPT_QINFO               =
+*        IR_SALV_ADAPTER               =
+      CHANGING
+        IT_OUTTAB                     = GT_SUPPLIER
+        IT_FIELDCATALOG               = GT_FIELDCAT_COMPANY
+*        IT_SORT                       =
+*        IT_FILTER                     =
+*      EXCEPTIONS
+*        INVALID_PARAMETER_COMBINATION = 1
+*        PROGRAM_ERROR                 = 2
+*        TOO_MANY_LINES                = 3
+*        others                        = 4
+    .
+
+
+  ENDIF .
 
 ENDIF .
 
@@ -258,6 +342,67 @@ FORM FIELD_CATALOG_PERSON .
   APPEND GS_FIELDCAT_PERSON TO GT_FIELDCAT_PERSON .
 
 ENDFORM.
+
+FORM FIELD_CATALOG_PERSON_DISPLAY .
+
+  CLEAR : GS_FIELDCAT_PERSON , GT_FIELDCAT_PERSON .
+  GS_FIELDCAT_PERSON-COL_POS = 1.
+  GS_FIELDCAT_PERSON-FIELDNAME = 'ZLFA1_NAME' .
+  GS_FIELDCAT_PERSON-COLTEXT = '구매처명' .
+  APPEND GS_FIELDCAT_PERSON TO GT_FIELDCAT_PERSON .
+
+  CLEAR : GS_FIELDCAT_PERSON  .
+  GS_FIELDCAT_PERSON-COL_POS = 2.
+  GS_FIELDCAT_PERSON-FIELDNAME = 'ZLFA1_STCD1' .
+  GS_FIELDCAT_PERSON-COLTEXT = '개인번호' .
+  GS_FIELDCAT_PERSON-EDIT = 'X' .
+  APPEND GS_FIELDCAT_PERSON TO GT_FIELDCAT_PERSON .
+
+  CLEAR : GS_FIELDCAT_PERSON .
+  GS_FIELDCAT_PERSON-COL_POS = 3.
+  GS_FIELDCAT_PERSON-FIELDNAME = 'ZLFA1_STARS' .
+  GS_FIELDCAT_PERSON-COLTEXT = '주소' .
+  APPEND GS_FIELDCAT_PERSON TO GT_FIELDCAT_PERSON .
+
+  CLEAR : GS_FIELDCAT_PERSON .
+  GS_FIELDCAT_PERSON-COL_POS = 4.
+  GS_FIELDCAT_PERSON-FIELDNAME = 'ZLFB1_AKNOT' .
+  GS_FIELDCAT_PERSON-COLTEXT = '조정계정' .
+  APPEND GS_FIELDCAT_PERSON TO GT_FIELDCAT_PERSON .
+
+  CLEAR : GS_FIELDCAT_PERSON .
+  GS_FIELDCAT_PERSON-COL_POS = 5.
+  GS_FIELDCAT_PERSON-FIELDNAME = 'ZLFB1_ZTERM' .
+  GS_FIELDCAT_PERSON-COLTEXT = '지급조건' .
+  APPEND GS_FIELDCAT_PERSON TO GT_FIELDCAT_PERSON .
+
+  CLEAR : GS_FIELDCAT_PERSON .
+  GS_FIELDCAT_PERSON-COL_POS = 6.
+  GS_FIELDCAT_PERSON-FIELDNAME = 'ZLFM1_EKORG' .
+  GS_FIELDCAT_PERSON-COLTEXT = '구매조직' .
+  APPEND GS_FIELDCAT_PERSON TO GT_FIELDCAT_PERSON .
+
+  CLEAR : GS_FIELDCAT_PERSON .
+  GS_FIELDCAT_PERSON-COL_POS = 7.
+  GS_FIELDCAT_PERSON-FIELDNAME = 'ZLFM1_EKGRP' .
+  GS_FIELDCAT_PERSON-COLTEXT = '구매그룹' .
+  APPEND GS_FIELDCAT_PERSON TO GT_FIELDCAT_PERSON .
+
+  CLEAR : GS_FIELDCAT_PERSON .
+  GS_FIELDCAT_PERSON-COL_POS = 8.
+  GS_FIELDCAT_PERSON-FIELDNAME = 'ZLFM1_WAERS' .
+  GS_FIELDCAT_PERSON-COLTEXT = '통화' .
+  APPEND GS_FIELDCAT_PERSON TO GT_FIELDCAT_PERSON .
+
+  CLEAR : GS_FIELDCAT_PERSON .
+  GS_FIELDCAT_PERSON-COL_POS = 7.
+  GS_FIELDCAT_PERSON-FIELDNAME = 'ZLFM1_MWSKZ' .
+  GS_FIELDCAT_PERSON-COLTEXT = '세금코드' .
+  APPEND GS_FIELDCAT_PERSON TO GT_FIELDCAT_PERSON .
+
+ENDFORM.
+
+
 *&---------------------------------------------------------------------*
 *&      Form  FIELD_CATALOG_COMPANY
 *&---------------------------------------------------------------------*
@@ -278,6 +423,66 @@ FORM FIELD_CATALOG_COMPANY .
   GS_FIELDCAT_COMPANY-COL_POS = 2.
   GS_FIELDCAT_COMPANY-FIELDNAME = 'ZLFA1_STCD2' .
   GS_FIELDCAT_COMPANY-COLTEXT = '사업자번호' .
+  APPEND GS_FIELDCAT_COMPANY TO GT_FIELDCAT_COMPANY .
+
+  CLEAR : GS_FIELDCAT_COMPANY .
+  GS_FIELDCAT_COMPANY-COL_POS = 3.
+  GS_FIELDCAT_COMPANY-FIELDNAME = 'ZLFA1_STARS' .
+  GS_FIELDCAT_COMPANY-COLTEXT = '주소' .
+  APPEND GS_FIELDCAT_COMPANY TO GT_FIELDCAT_COMPANY .
+
+  CLEAR : GS_FIELDCAT_COMPANY .
+  GS_FIELDCAT_COMPANY-COL_POS = 4.
+  GS_FIELDCAT_COMPANY-FIELDNAME = 'ZLFB1_AKNOT' .
+  GS_FIELDCAT_COMPANY-COLTEXT = '조정계정' .
+  APPEND GS_FIELDCAT_COMPANY TO GT_FIELDCAT_COMPANY .
+
+  CLEAR : GS_FIELDCAT_COMPANY .
+  GS_FIELDCAT_COMPANY-COL_POS = 5.
+  GS_FIELDCAT_COMPANY-FIELDNAME = 'ZLFB1_ZTERM' .
+  GS_FIELDCAT_COMPANY-COLTEXT = '지급조건' .
+  APPEND GS_FIELDCAT_COMPANY TO GT_FIELDCAT_COMPANY .
+
+  CLEAR : GS_FIELDCAT_COMPANY .
+  GS_FIELDCAT_COMPANY-COL_POS = 6.
+  GS_FIELDCAT_COMPANY-FIELDNAME = 'ZLFM1_EKORG' .
+  GS_FIELDCAT_COMPANY-COLTEXT = '구매조직' .
+  APPEND GS_FIELDCAT_COMPANY TO GT_FIELDCAT_COMPANY .
+
+  CLEAR : GS_FIELDCAT_COMPANY .
+  GS_FIELDCAT_COMPANY-COL_POS = 7.
+  GS_FIELDCAT_COMPANY-FIELDNAME = 'ZLFM1_EKGRP' .
+  GS_FIELDCAT_COMPANY-COLTEXT = '구매그룹' .
+  APPEND GS_FIELDCAT_COMPANY TO GT_FIELDCAT_COMPANY .
+
+  CLEAR : GS_FIELDCAT_COMPANY .
+  GS_FIELDCAT_COMPANY-COL_POS = 8.
+  GS_FIELDCAT_COMPANY-FIELDNAME = 'ZLFM1_WAERS' .
+  GS_FIELDCAT_COMPANY-COLTEXT = '통화' .
+  APPEND GS_FIELDCAT_COMPANY TO GT_FIELDCAT_COMPANY .
+
+  CLEAR : GS_FIELDCAT_COMPANY .
+  GS_FIELDCAT_COMPANY-COL_POS = 7.
+  GS_FIELDCAT_COMPANY-FIELDNAME = 'ZLFM1_MWSKZ' .
+  GS_FIELDCAT_COMPANY-COLTEXT = '세금코드' .
+  APPEND GS_FIELDCAT_COMPANY TO GT_FIELDCAT_COMPANY .
+
+ENDFORM.
+
+
+FORM FIELD_CATALOG_COMPANY_DISPLAY .
+
+  CLEAR : GS_FIELDCAT_COMPANY , GT_FIELDCAT_COMPANY .
+  GS_FIELDCAT_COMPANY-COL_POS = 1.
+  GS_FIELDCAT_COMPANY-FIELDNAME = 'ZLFA1_NAME' .
+  GS_FIELDCAT_COMPANY-COLTEXT = '구매처명' .
+  APPEND GS_FIELDCAT_COMPANY TO GT_FIELDCAT_COMPANY .
+
+  CLEAR : GS_FIELDCAT_COMPANY  .
+  GS_FIELDCAT_COMPANY-COL_POS = 2.
+  GS_FIELDCAT_COMPANY-FIELDNAME = 'ZLFA1_STCD2' .
+  GS_FIELDCAT_COMPANY-COLTEXT = '사업자번호' .
+  GS_FIELDCAT_COMPANY-EDIT = 'X' .
   APPEND GS_FIELDCAT_COMPANY TO GT_FIELDCAT_COMPANY .
 
   CLEAR : GS_FIELDCAT_COMPANY .
@@ -443,7 +648,46 @@ FORM CLASS_EVENT .
   IF SY-SUBRC <> 0.
 *   Implement suitable error handling here
   ENDIF.
+  IF P_CREATE = 'X' .
+    CREATE OBJECT GO_EVENT .
+    SET HANDLER GO_EVENT->HANDLER_DATA_CHANGED FOR GC_GRID .
+  ELSE .
+     CREATE OBJECT GO_EVENT2 .
+     SET HANDLER GO_EVENT2->HANDLER_DATA_CHANGED2 FOR GC_GRID .
+  ENDIF .
 
-  CREATE OBJECT GO_EVENT .
-  SET HANDLER GO_EVENT->HANDLER_DATA_CHANGED FOR GC_GRID .
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*&      Form  ALV_HANDLER_DATA_CHANGED2
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*      -->P_ER_DATA_CHANGED  text
+*      -->P_E_ONF4  text
+*      -->P_E_ONF4_BEFORE  text
+*      -->P_E_ONF4_AFTER  text
+*      -->P_E_UCOMM  text
+*----------------------------------------------------------------------*
+FORM ALV_HANDLER_DATA_CHANGED2  USING   P_DATA_CHANGED TYPE REF TO CL_ALV_CHANGED_DATA_PROTOCOL
+                                        P_E_ONF4
+                                        P_E_ONF4_BEFORE
+                                        P_E_ONF4_AFTER
+                                        P_E_UCOMM.
+
+  DATA : LS_MODI TYPE LVC_S_MODI .
+  CLEAR : LS_MODI .
+  LOOP AT P_DATA_CHANGED->MT_GOOD_CELLS INTO LS_MODI.
+    IF LS_MODI-FIELDNAME = 'ZLFA1_STCD1' .
+      READ TABLE GT_SUPPLIER INTO GS_SUPPLIER INDEX LS_MODI-ROW_ID.
+      MODIFY GT_SUPPLIER FROM GS_SUPPLIER INDEX LS_MODI-ROW_ID.
+    ELSEIF LS_MODI-FIELDNAME = 'ZLFA1_STCD2' .
+      READ TABLE GT_SUPPLIER INTO GS_SUPPLIER INDEX LS_MODI-ROW_ID.
+      MODIFY GT_SUPPLIER FROM GS_SUPPLIER INDEX LS_MODI-ROW_ID.
+    ENDIF .
+  ENDLOOP.
+
+  PERFORM REFRESH.
+
+
 ENDFORM.

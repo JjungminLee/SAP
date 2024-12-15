@@ -142,7 +142,12 @@ MODULE USER_COMMAND_0200 INPUT.
 
      "선택된 행들이 모인 인터널테이블을 zedt13_207에서 삭제
      loop at gt_item_del into gs_item .
+       DATA : LV_BELNR_L TYPE P .
+       LV_BELNR_L = gs_item-ZMSEG_BELNR - 1 .
+       DATA : LV_BELNR_L_TO_C TYPE ZEDT13_207-ZMSEG_BELNR .
+       LV_BELNR_L_TO_C = LV_BELNR_L .
        delete from zedt13_207 where ZMSEG_BELNR = gs_item-ZMSEG_BELNR .
+       delete from zedt13_207 where ZMSEG_BELNR = LV_BELNR_L_TO_C .
      endloop .
      if sy-subrc = 0 .
        message '입고취소 성공' type 'I' .

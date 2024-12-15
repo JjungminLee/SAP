@@ -185,13 +185,15 @@ MODULE USER_COMMAND_0200 INPUT.
 
        DATA : LV_BELNR_L TYPE P .
        DATA : LV_BELNR_TAX TYPE P .
-       DATA : LV_BELNR_H TYPE ZEDT13_209-ZBSIK_BELNR .
-       LV_BELNR_L = gs_item-ZBSIK_BELNR - 1 .
-       LV_BELNR_TAX = gs_item-ZBSIK_BELNR + 1 .
-       LV_BELNR_H = gs_item-ZBSIK_BELNR .
+       DATA : LV_BELNR_H TYPE P .
+       LV_BELNR_L = gs_item-ZBSIK_BELNR - 2 .
+       LV_BELNR_H = gs_item-ZBSIK_BELNR - 1 .
+       LV_BELNR_TAX = gs_item-ZBSIK_BELNR .
        DATA : LV_BELNR_L_TO_C TYPE ZEDT13_209-ZBSIK_BELNR .
+       DATA : LV_BELNR_H_TO_C TYPE ZEDT13_209-ZBSIK_BELNR .
        DATA : LV_BELNR_TAX_TO_C TYPE ZEDT13_209-ZBSIK_BELNR .
        LV_BELNR_L_TO_C = LV_BELNR_L .
+       LV_BELNR_H_TO_C = LV_BELNR_H .
        LV_BELNR_TAX_TO_C = LV_BELNR_TAX .
        CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
         EXPORTING
@@ -207,18 +209,20 @@ MODULE USER_COMMAND_0200 INPUT.
 
        CALL FUNCTION 'CONVERSION_EXIT_ALPHA_INPUT'
         EXPORTING
-          input  = LV_BELNR_H
+          input  =  LV_BELNR_H_TO_C
         IMPORTING
-          output = LV_BELNR_H .
+          output =  LV_BELNR_H_TO_C .
+
+
 
        delete from zedt13_209
        where ZBSIK_BELNR = LV_BELNR_L_TO_C  .
 
        delete from zedt13_209
-       where ZBSIK_BELNR = LV_BELNR_TAX_TO_C  .
+       where ZBSIK_BELNR = LV_BELNR_H_TO_C  .
 
        delete from zedt13_209
-       where ZBSIK_BELNR = LV_BELNR_H  .
+       where ZBSIK_BELNR = LV_BELNR_TAX_TO_C  .
      endloop .
      if sy-subrc = 0 .
        message '송장취소  성공' type 'I' .

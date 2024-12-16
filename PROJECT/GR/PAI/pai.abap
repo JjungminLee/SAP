@@ -74,12 +74,27 @@ MODULE USER_COMMAND_0100 INPUT.
         INSERT ZEDT13_206 FROM GS_HEADER .
         "차대변을 같이 넣어야함
 
+        " 전표 번호 자동 채번
+        DATA: lv_last_value2 TYPE ZEDT13_207-ZMSEG_BELNR ,
+          lv_next_value2 TYPE ZEDT13_207-ZMSEG_BELNR ,
+          lv_last_value_num2 TYPE p ,        " 숫자로 변환된 값
+          lv_next_value_num2 TYPE p .        " 다음 값을 계산하기 위한 숫자 값
+
+
+        " 테이블에서 마지막 값을 가져오기
+        SELECT MAX( ZMSEG_BELNR )
+          INTO lv_last_value2
+          FROM zedt13_207.
+
+        " CHAR -> 숫자로 변환
+          lv_last_value_num2 = lv_last_value2.
+
         " [GR아이템] 삽입 로직
         "GT_PURCHASE_SELECT 내의 데이터를 207번 테이블에 넣는다
         LOOP AT GT_PURCHASE_SELECT INTO GS_PURCHASE .
 
-          PERFORM INSERT_DEBIT USING LV_YEAR LV_NEXT_VALUE SY-TABIX . "차변
-          PERFORM INSERT_CREDIT USING LV_YEAR LV_NEXT_VALUE SY-TABIX . "대변
+          PERFORM INSERT_DEBIT USING LV_YEAR LV_NEXT_VALUE SY-TABIX LV_LAST_VALUE_NUM2 . "차변
+          PERFORM INSERT_CREDIT USING LV_YEAR LV_NEXT_VALUE SY-TABIX LV_LAST_VALUE_NUM2 . "대변
 
         ENDLOOP .
 

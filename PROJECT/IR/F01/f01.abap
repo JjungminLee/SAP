@@ -22,6 +22,9 @@ ENDFORM.
 *  <--  p2        text
 *----------------------------------------------------------------------*
 FORM PARAM_CHECK .
+  IF P_EBELN1 IS INITIAL OR P_WERKS1 IS INITIAL OR P_DATS1 IS INITIAL .
+    MESSAGE '구매오더, 플랜트, 송장처리일을 입력하시오' TYPE 'E' .
+  ENDIF .
 DATA : LS_PO TYPE ZEDT13_205 .
   DATA : LT_PO LIKE TABLE OF ZEDT13_205 .
   SELECT * FROM ZEDT13_205 INTO CORRESPONDING FIELDS OF TABLE LT_PO .
@@ -222,18 +225,24 @@ FORM FIELD_CATALOG_DISPLAY .
   CLEAR : GS_FIELDCAT .
   GS_FIELDCAT-COL_POS = 3 .
   GS_FIELDCAT-FIELDNAME = 'ZBSIK_DMBTR' .
+  gs_fieldcat-currency = 'krw'.
+  gs_fieldcat-DECIMALS_O = '0'.
   GS_FIELDCAT-COLTEXT = '공급가액' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
   GS_FIELDCAT-COL_POS = 4 .
   GS_FIELDCAT-FIELDNAME = 'ZBSIK_MWSTS' .
+  gs_fieldcat-currency = 'krw'.
+  gs_fieldcat-DECIMALS_O = '0'.
   GS_FIELDCAT-COLTEXT = '세액' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
   GS_FIELDCAT-COL_POS = 5 .
   GS_FIELDCAT-FIELDNAME = 'ZBSIK_WRBTR' .
+  gs_fieldcat-currency = 'krw'.
+  gs_fieldcat-DECIMALS_O = '0'.
   GS_FIELDCAT-COLTEXT = '금액' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
@@ -521,7 +530,9 @@ FORM INSERT_DEBIT USING LV_BUKRS LV_EBELN LV_LIFNR VALUE(lv_next_value)
    GS_ITEM-ZMSEG_WERKS = GS_PURCHASE-ZEKPO_WERKS .
   "차대변
    GS_ITEM-ZMSEG_SHKZG = 'L' .
-  LV_BELNR_NUM = LV_BELNR_NUM + 1 .
+  DATA : LV_ITEM_SIZE TYPE I .
+  DESCRIBE TABLE GT_ITEM LINES LV_ITEM_SIZE .
+  LV_BELNR_NUM = LV_BELNR_NUM + LV_ITEM_SIZE + 1 .
   LV_ZBSIK_BELNR = LV_BELNR_NUM .
   "금액
   GS_ITEM-ZBSIK_WRBTR = GS_ITEM-ZBSIK_DMBTR + GS_ITEM-ZBSIK_MWSTS .
@@ -589,7 +600,9 @@ FORM INSERT_CREDIT USING LV_BUKRS LV_EBELN LV_LIFNR VALUE(lv_next_value)
    GS_ITEM-ZMSEG_WERKS = GS_PURCHASE-ZEKPO_WERKS .
   "차대변
    GS_ITEM-ZMSEG_SHKZG = 'H' .
-  LV_BELNR_NUM = LV_BELNR_NUM + 2 .
+ DATA : LV_ITEM_SIZE TYPE I .
+  DESCRIBE TABLE GT_ITEM LINES LV_ITEM_SIZE .
+  LV_BELNR_NUM = LV_BELNR_NUM + LV_ITEM_SIZE + 1 .
   LV_ZBSIK_BELNR = LV_BELNR_NUM .
   "금액
   GS_ITEM-ZBSIK_WRBTR = GS_ITEM-ZBSIK_DMBTR + GS_ITEM-ZBSIK_MWSTS .
@@ -662,8 +675,9 @@ FORM INSERT_TAX USING LV_BUKRS LV_EBELN LV_LIFNR
   "금액
   GS_ITEM-ZBSIK_WRBTR = GS_ITEM-ZBSIK_DMBTR + GS_ITEM-ZBSIK_MWSTS .
 
-
-  LV_BELNR_NUM = LV_BELNR_NUM + 3 .
+  DATA : LV_ITEM_SIZE TYPE I .
+  DESCRIBE TABLE GT_ITEM LINES LV_ITEM_SIZE .
+  LV_BELNR_NUM = LV_BELNR_NUM + LV_ITEM_SIZE + 1 .
   LV_ZBSIK_BELNR = LV_BELNR_NUM .
 
 
@@ -706,12 +720,26 @@ FORM GET_IR_DATA .
   LOOP AT GT_ITEM INTO GS_ITEM .
     DATA : lv_p_value TYPE P LENGTH 11.
     LV_P_VALUE = GS_ITEM-ZBSIK_BELNR .
-    IF LV_P_VALUE MOD 2 = 1 .
+    IF LV_P_VALUE MOD 3 = 1 .
        DELETE GT_ITEM INDEX sy-tabix.
     ENDIF .
-    IF LV_P_VALUE MOD 2 = 2 .
+    IF LV_P_VALUE MOD 3 = 2 .
        DELETE GT_ITEM INDEX sy-tabix.
     ENDIF .
   ENDLOOP .
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*&      Form  PARAM_CHECK2
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM PARAM_CHECK2 .
+  IF P_EBELN2 IS INITIAL OR P_WERKS2 IS INITIAL .
+    MESSAGE '구매오더, 플랜트를  입력하시오' TYPE 'E' .
+  ENDIF .
 
 ENDFORM.

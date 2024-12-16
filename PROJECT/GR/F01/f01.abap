@@ -22,6 +22,9 @@ ENDFORM.
 *  <--  p2        text
 *----------------------------------------------------------------------*
 FORM PARAM_CHECK .
+  IF P_DATS1 IS INITIAL OR P_EBELN1 IS INITIAL OR P_WERKS1 IS INITIAL .
+    MESSAGE '구매오더, 플랜트, 입고처리일을 입력하세요' TYPE 'E' .
+  ENDIF .
 
   DATA : LS_PO TYPE ZEDT13_205 .
   DATA : LT_PO LIKE TABLE OF ZEDT13_205 .
@@ -240,78 +243,74 @@ FORM FIELD_CATALOG_DISPLAY .
 
   CLEAR : GS_FIELDCAT .
   GS_FIELDCAT-COL_POS = 2.
-  GS_FIELDCAT-FIELDNAME = 'ZMSEG_BELNR' .
-  GS_FIELDCAT-COLTEXT = '전표번호' .
-  APPEND GS_FIELDCAT TO GT_FIELDCAT .
-
-  CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 3.
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_MATNR' .
   GS_FIELDCAT-COLTEXT = '자재번호' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 4 .
+  GS_FIELDCAT-COL_POS = 3 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_WERKS' .
   GS_FIELDCAT-COLTEXT = '플랜트' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 5.
+  GS_FIELDCAT-COL_POS = 4 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_LGORT' .
   GS_FIELDCAT-COLTEXT = '저장위치' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 6.
+  GS_FIELDCAT-COL_POS = 5 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_LIFNR' .
   GS_FIELDCAT-COLTEXT = '구매처번호' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 7.
+  GS_FIELDCAT-COL_POS = 6 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_WAERS' .
   GS_FIELDCAT-COLTEXT = '통화' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 8 .
+  GS_FIELDCAT-COL_POS = 7 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_MEINS' .
   GS_FIELDCAT-COLTEXT = '단위' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 9 .
+  GS_FIELDCAT-COL_POS = 8 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_MENGE' .
   GS_FIELDCAT-COLTEXT = '수량' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 10 .
+  GS_FIELDCAT-COL_POS = 9 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_EBELN' .
   GS_FIELDCAT-COLTEXT = '구매오더번호' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 11 .
+  GS_FIELDCAT-COL_POS = 10 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_BUKRS' .
   GS_FIELDCAT-COLTEXT = '회사코드' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 12 .
+  GS_FIELDCAT-COL_POS = 11 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_GJAHR' .
   GS_FIELDCAT-COLTEXT = '회계연도' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 13 .
+  GS_FIELDCAT-COL_POS = 12 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_DMBTR' .
   GS_FIELDCAT-COLTEXT = '금액' .
+  gs_fieldcat-currency = 'krw'.
+  gs_fieldcat-DECIMALS_O = '0'.
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
 
   CLEAR : GS_FIELDCAT .
-  GS_FIELDCAT-COL_POS = 14 .
+  GS_FIELDCAT-COL_POS = 13 .
   GS_FIELDCAT-FIELDNAME = 'ZMSEG_ZEILE' .
   GS_FIELDCAT-COLTEXT = '아이템번호' .
   APPEND GS_FIELDCAT TO GT_FIELDCAT .
@@ -525,27 +524,18 @@ ENDFORM.
 *  -->  p1        text
 *  <--  p2        text
 *----------------------------------------------------------------------*
-FORM INSERT_DEBIT USING LV_YEAR LV_NEXT_VALUE IDX .
+FORM INSERT_DEBIT USING LV_YEAR LV_NEXT_VALUE IDX VALUE(LV_NUM) .
   "전표번호 자동채번
-          DATA: lv_last_value2 TYPE ZEDT13_207-ZMSEG_BELNR ,
-          lv_next_value2 TYPE ZEDT13_207-ZMSEG_BELNR ,
-          lv_last_value_num2 TYPE p ,        " 숫자로 변환된 값
-          lv_next_value_num2 TYPE p .        " 다음 값을 계산하기 위한 숫자 값
+          DATA : LV_ITEM_SIZE TYPE I .
+          DESCRIBE TABLE GT_ITEM LINES LV_ITEM_SIZE .
 
-
-        " 테이블에서 마지막 값을 가져오기
-        SELECT MAX( zmseg_mblnr )
-          INTO lv_last_value2
-          FROM zedt13_207.
-
-          " CHAR -> 숫자로 변환
-          lv_last_value_num2 = lv_last_value2.
+          DATA: lv_next_value2 TYPE ZEDT13_207-ZMSEG_BELNR .
 
           " 다음 값 계산
-          lv_next_value_num2 = lv_last_value_num2 + 1.
+          LV_NUM = LV_NUM + LV_ITEM_SIZE + 1  .
 
           " 숫자 -> CHAR로 변환
-          lv_next_value2 = lv_next_value_num2.
+          lv_next_value2 = LV_NUM .
 
           "입고문서번호
           GS_ITEM-ZMSEG_MBLNR = lv_next_value .
@@ -584,11 +574,8 @@ FORM INSERT_DEBIT USING LV_YEAR LV_NEXT_VALUE IDX .
           "회계연도
           GS_ITEM-ZMSEG_GJAHR = lv_year .
 
-          DATA : LV_ITEM_SIZE TYPE I .
-          DESCRIBE TABLE GT_ITEM LINES LV_ITEM_SIZE .
-
           "전표번호
-          GS_ITEM-ZMSEG_BELNR = LV_ITEM_SIZE + 1 .
+          GS_ITEM-ZMSEG_BELNR = lv_next_value2 .
 
           "차대변
           GS_ITEM-ZMSEG_SHKZG = 'S' .
@@ -607,27 +594,16 @@ ENDFORM.
 *  -->  p1        text
 *  <--  p2        text
 *----------------------------------------------------------------------*
-FORM INSERT_CREDIT USING LV_YEAR LV_NEXT_VALUE IDX .
-  "전표번호 자동채번
-          DATA: lv_last_value2 TYPE ZEDT13_207-ZMSEG_BELNR ,
-          lv_next_value2 TYPE ZEDT13_207-ZMSEG_BELNR ,
-          lv_last_value_num2 TYPE p ,        " 숫자로 변환된 값
-          lv_next_value_num2 TYPE p .        " 다음 값을 계산하기 위한 숫자 값
-
-
-        " 테이블에서 마지막 값을 가져오기
-        SELECT MAX( zmseg_mblnr )
-          INTO lv_last_value2
-          FROM zedt13_207.
-
-          " CHAR -> 숫자로 변환
-          lv_last_value_num2 = lv_last_value2.
+FORM INSERT_CREDIT USING LV_YEAR LV_NEXT_VALUE IDX VALUE(LV_NUM) .
+           DATA : LV_ITEM_SIZE TYPE I .
+          DESCRIBE TABLE GT_ITEM LINES LV_ITEM_SIZE .
+          DATA: lv_next_value2 TYPE ZEDT13_207-ZMSEG_BELNR .
 
           " 다음 값 계산
-          lv_next_value_num2 = lv_last_value_num2 + 1.
+          LV_NUM = LV_NUM + LV_ITEM_SIZE + 1  .
 
           " 숫자 -> CHAR로 변환
-          lv_next_value2 = lv_next_value_num2.
+          lv_next_value2 = LV_NUM .
 
           "입고문서번호
           GS_ITEM-ZMSEG_MBLNR = lv_next_value .
@@ -666,11 +642,8 @@ FORM INSERT_CREDIT USING LV_YEAR LV_NEXT_VALUE IDX .
           "회계연도
           GS_ITEM-ZMSEG_GJAHR = lv_year .
 
-          DATA : LV_ITEM_SIZE TYPE I .
-          DESCRIBE TABLE GT_ITEM LINES LV_ITEM_SIZE .
-
           "전표번호
-          GS_ITEM-ZMSEG_BELNR = LV_ITEM_SIZE + 1 .
+          GS_ITEM-ZMSEG_BELNR = lv_next_value2 .
 
           "차대변
           GS_ITEM-ZMSEG_SHKZG = 'H' .
@@ -713,5 +686,19 @@ FORM GET_GR_DATA .
        DELETE GT_ITEM INDEX sy-tabix.
     ENDIF .
   ENDLOOP .
+
+ENDFORM.
+*&---------------------------------------------------------------------*
+*&      Form  PARAM_CHECK2
+*&---------------------------------------------------------------------*
+*       text
+*----------------------------------------------------------------------*
+*  -->  p1        text
+*  <--  p2        text
+*----------------------------------------------------------------------*
+FORM PARAM_CHECK2 .
+  IF P_EBELN2 IS INITIAL OR P_WERKS2 IS INITIAL .
+    MESSAGE '구매오더, 플랜트를 입력하세요' TYPE 'E' .
+  ENDIF .
 
 ENDFORM.
